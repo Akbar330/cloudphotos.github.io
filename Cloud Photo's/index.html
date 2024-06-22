@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Cloud Photo Storage</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            margin-right: 10px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #progressWrapper {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        #progressBar {
+            height: 20px;
+            background-color: #007bff;
+            width: 0;
+        }
+
+        #message {
+            padding: 10px;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            display: none;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simple Cloud Photo Storage</h1>
+
+        <form id="uploadForm" action="upload.php" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" id="file" accept="image/png, image/jpeg, image/gif">
+            <button type="submit">Upload Photo</button>
+        </form>
+
+        <div id="progressWrapper">
+            <div id="progressBar"></div>
+        </div>
+
+        <div id="message"></div>
+
+        <!-- Tombol untuk menuju ke galeri -->
+        <a href="gallery.php" class="button">Go to Gallery</a>
+    </div>
+
+    <script>
+        // Script untuk menampilkan pesan "Upload Successful" setelah berhasil mengunggah
+        const uploadForm = document.getElementById('uploadForm');
+        const messageBox = document.getElementById('message');
+
+        uploadForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Buat objek FormData untuk mengirim data form secara asynchronous
+            const formData = new FormData(uploadForm);
+
+            // Tampilkan progress bar
+            document.getElementById('progressWrapper').style.display = 'block';
+
+            // Kirim data menggunakan Fetch API
+            fetch('upload.php', {
+                method: 'POST',
+                body: formData,
+                // Tambah header untuk FormData
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Sembunyikan progress bar
+                document.getElementById('progressWrapper').style.display = 'none';
+
+                // Tampilkan pesan hasil
+                messageBox.style.display = 'block';
+                messageBox.innerHTML = data.message; // Pesan dari server
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Handle error jika diperlukan
+            });
+        });
+    </script>
+</body>
+</html>
